@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -I./fsm/include -I./ui/include
+CFLAGS = -Wall -I./fsm/include -I./ui/include -lncurses
 LIBS = ./fsm/bin/libfsm.a
 
 BIN_DIR = ./bin

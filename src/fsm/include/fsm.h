@@ -20,4 +20,6 @@ typedef struct FSM {
 
 void fsm_update(FSM *fsm, struct timeval *dt);
 
+int fsm_runMainLoop(int fps);
+
 #endif

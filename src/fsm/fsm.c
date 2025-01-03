@@ -8,7 +8,7 @@ void fsm_update(FSM *fsm, struct timeval *dt){
 	if (fsm->current < 0) {
 		fsm->states[0].on_enter(&fsm->states[0], NULL);
 		fsm->current = 0;
-	} else if (fsm->current >= fsm->len || fsm->current < 0) {
+	} else if (fsm->current >= fsm->len) {
 		return; // State doesn't exist, do nothing
 	}
 
