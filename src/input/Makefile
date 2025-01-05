@@ -1,12 +1,12 @@
 CC = gcc
-CFLAGS = -Wall -I./include -I../input/include -lncurses
+CFLAGS = -Wall -I./include -lncurses
 
 BIN_DIR = ./bin
 TEST_DIR = ./tests
 
 # Static Library
 SRC = $(wildcard *.c)
-LIB = $(BIN_DIR)/libfsm.a
+LIB = $(BIN_DIR)/libinput.a
 OBJ = $(SRC:.c=.o)
 OBJ_BIN = $(addprefix $(BIN_DIR)/, $(OBJ))
 
@@ -14,8 +14,6 @@ OBJ_BIN = $(addprefix $(BIN_DIR)/, $(OBJ))
 TEST_SRC = $(wildcard $(TEST_DIR)/*.test.c)
 TEST_OBJ = $(TEST_SRC:$(TEST_DIR)/%.test.c=$(BIN_DIR)/%.o)
 TEST_BIN = $(TEST_OBJ:$(BIN_DIR)/%.o=$(BIN_DIR)/%.test)
-
-LIBS = ../input/bin/libinput.a
 
 all: $(LIB)
 
@@ -36,9 +34,6 @@ $(BIN_DIR)/%.test: $(BIN_DIR)/%.test.o $(LIB)
 
 $(BIN_DIR):
 	@mkdir -p $(BIN_DIR)
-
-$(LIBS):
-	$(MAKE) -C input
 
 clean:
 	rm -rf $(BIN_DIR)

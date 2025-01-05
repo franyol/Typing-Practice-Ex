@@ -1,6 +1,7 @@
 CC = gcc
-CFLAGS = -Wall -I./fsm/include -I./ui/include -lncurses
-LIBS = ./fsm/bin/libfsm.a
+CFLAGS = -Wall -I./fsm/include -I./input/include
+LDFLAGS = -L./fsm/bin -L./input/bin -lncurses -lfsm -linput
+LIBS = ./fsm/bin/libfsm.a ./input/bin/libinput.a
 
 BIN_DIR = ./bin
 
@@ -13,7 +14,7 @@ TARGET = $(BIN_DIR)/main
 all: $(TARGET)
 
 $(TARGET): $(OBJS) $(LIBS)
-	$(CC) $(CFLAGS) -o $@ $^ 
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 $(BIN_DIR)/main.o: main.c
 	@mkdir -p $(BIN_DIR)
@@ -21,9 +22,11 @@ $(BIN_DIR)/main.o: main.c
 
 $(LIBS):
 	$(MAKE) -C fsm
+	$(MAKE) -C input
 
 clean:
 	rm -rf $(BIN_DIR)
 	$(MAKE) -C fsm clean
+	$(MAKE) -C input clean
 
 .PHONY: all clean
