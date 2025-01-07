@@ -2,6 +2,7 @@
 #define _MODES_H_
 
 #include "fsm.h"
+#include "../../reader/include/reader.h"
 #include <time.h>
 #include <ncurses.h>
 
@@ -9,32 +10,12 @@ typedef enum Mode {
 	INSERT
 } Mode;
 
-typedef enum Color {
-	BLACK,
-	RED,
-	BLUE,
-	YELLOW,
-	GREEN,
-	CURSOR
-} Color;
-
 typedef struct IModeData {
-	unsigned int page;
-	unsigned int line;
-	unsigned int column;
-	unsigned int index;
-	unsigned int writeindex;
-	char *pagebuff;
-	char *writebuff;
-	int fd;
-	int buffSize;
-	ssize_t bytesRead;
+	TextReader *reader;	
 } IModeData;
 
 typedef struct IModeArg {
-	unsigned int page;
-	unsigned int line;
-	unsigned int column;
+	int x;
 } IModeArg;
 
 #define DECLARE_STATE(type) \

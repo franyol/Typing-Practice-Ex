@@ -7,6 +7,9 @@
 #include <fcntl.h>
 #include "include/fsm.h"
 #include "include/modes.h"
+#include "draw_utils.h"
+#include "input.h"
+#include "reader.h"
 
 static void mainLoop( int freq, char *filename ) {
 	struct timeval elapsed, f, start, end;
@@ -19,17 +22,21 @@ static void mainLoop( int freq, char *filename ) {
 
 	static char pageBuff[8192];
 	static char writeBuff[8192];
+	static TextReader reader;
 	static IModeData insert_data;
-	insert_data.page = 0;
-	insert_data.line = 0;
-	insert_data.column = 0;
-	insert_data.index = 0;
-	insert_data.writeindex = 0;
-	insert_data.pagebuff = pageBuff;
-	insert_data.writebuff = writeBuff;
-	insert_data.fd = fd;
-	insert_data.buffSize = 8192;
-	insert_data.bytesRead = 0;
+
+	reader.page = 0;
+	reader.line = 0;
+	reader.column = 0;
+	reader.index = 0;
+	reader.writeindex = 0;
+	reader.pagebuff = pageBuff;
+	reader.writebuff = writeBuff;
+	reader.fd = fd;
+	reader.buffSize = 8192;
+	reader.bytesRead = 0;
+
+	insert_data.reader = &reader;
 	
 	FSM_State states[] = {
 		{INSERT, &insert_data, insert_mode_on_enter, insert_mode_on_exit, insert_mode_update},
@@ -74,13 +81,8 @@ int fsm_runMainLoop(int fps, char *filename) {
 	curs_set(0);
 	keypad(stdscr, TRUE);
 	nodelay(stdscr, TRUE);
-
-	init_pair(BLACK, COLOR_WHITE, COLOR_BLACK);
-	init_pair(RED, COLOR_RED, COLOR_BLACK);
-	init_pair(YELLOW, COLOR_WHITE, COLOR_YELLOW);
-	init_pair(BLUE, COLOR_BLUE, COLOR_BLACK);
-	init_pair(GREEN, COLOR_GREEN, COLOR_BLACK);
-	init_pair(CURSOR, COLOR_BLACK, COLOR_WHITE);
+	init_colors();
+	input_init();
 
 	mainLoop(fps, filename);
 

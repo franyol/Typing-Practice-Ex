@@ -1,7 +1,7 @@
 CC = gcc
-CFLAGS = -Wall -I./fsm/include -I./input/include
-LDFLAGS = -L./fsm/bin -L./input/bin -lncurses -lfsm -linput
-LIBS = ./fsm/bin/libfsm.a ./input/bin/libinput.a
+CFLAGS = -Wall -I./fsm/include -I./input/include -I./reader/include
+LDFLAGS = -L./fsm/bin -L./input/bin -L./reader/bin -lncurses -lfsm -linput -lreader
+LIBS = ./fsm/bin/libfsm.a ./input/bin/libinput.a ./reader/bin/libreader.a
 
 BIN_DIR = ./bin
 
@@ -21,12 +21,14 @@ $(BIN_DIR)/main.o: main.c
 	$(CC) $(CFLAGS) -c main.c -o $(BIN_DIR)/main.o
 
 $(LIBS):
-	$(MAKE) -C fsm
+	$(MAKE) -C reader
 	$(MAKE) -C input
+	$(MAKE) -C fsm
 
 clean:
 	rm -rf $(BIN_DIR)
 	$(MAKE) -C fsm clean
 	$(MAKE) -C input clean
+	$(MAKE) -C reader clean
 
 .PHONY: all clean

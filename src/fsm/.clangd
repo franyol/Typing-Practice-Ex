@@ -3,3 +3,6 @@ CompileFlags:
     - -I../input/include
     - -L../input
     - -linput
+    - -I../reader/include
+    - -L../reader
+    - -lreader
