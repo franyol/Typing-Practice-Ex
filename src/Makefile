@@ -8,7 +8,7 @@ BIN_DIR = ./bin
 # Sources
 SRCS = main.c
 OBJS = $(BIN_DIR)/$(SRCS:.c=.o)
-TARGET = $(BIN_DIR)/main
+TARGET = $(BIN_DIR)/typing
 
 # Rules
 all: $(TARGET)

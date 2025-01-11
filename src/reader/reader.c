@@ -13,8 +13,12 @@ static unsigned int countdownColumns(TextReader *self) {
 
 unsigned int textReader_linesBetween(TextReader *self, unsigned int start, unsigned int end) {
 	int count = 0;
+	int index = 0;
 	for (; start <= end; start++) {
-		if(self->pagebuff[start] == '\n') count++;
+		if(self->pagebuff[start] == '\n' || index >= self->w) {
+			index = 0;
+			count++;
+		}
 	}
 	return count;
 }
@@ -56,13 +60,13 @@ int textReader_pageDown(TextReader *self) {
 
 void textReader_lineUp(TextReader *self, int n) {
 	for (int i = 0; i < n; i++) {
-		while(self->index < self->buffSize && self->pagebuff[self->index++] != 'n');
+		while(self->index < self->buffSize && self->pagebuff[self->index++] != '\n');
 	}
 }
 
 void textReader_lineDown(TextReader *self, int n) {
 	for (int i = 0; i < n; i++) {
-		while(self->index > 0 && self->pagebuff[self->index--] != 'n');
+		while(self->index > 0 && self->pagebuff[self->index--] != '\n');
 	}
 }
 
@@ -86,10 +90,10 @@ void textReader_putChar(TextReader* self, int c) {
 			else
 				self->writebuff[self->writeindex++] = 'r';
 
-			if (self->writebuff[self->writeindex] == '\n') {
+			if (self->writeindex > 0 && self->pagebuff[self->writeindex-1] == '\n') {
 				self->line ++;
 				self->column = 0;
-				if ((self->line - textReader_curLine(self)) > (self->h/2))
+				if (textReader_linesBetween(self, self->index, self->writeindex) > (self->h/2))
 					textReader_lineUp(self, 1);
 			}
 		}
@@ -106,8 +110,12 @@ void textReader_print(TextReader* self) {
 		if (index > self->bytesRead) break;
 		printw("%5d ", cur_line+line);
 
-		for (int col = 0; col < self->w; col++) {
+		for (int col = 0; 1; col++) {
 			if (index > self->bytesRead) break;
+			if (col >= self->w-7) {
+				printw("\n");
+				break;
+			}
 
 			switch (self->writebuff[index]) {
 				case 'g':
