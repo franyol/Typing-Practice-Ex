@@ -39,10 +39,9 @@ int insert_mode_update(FSM_State *self, struct timeval *dt) {
 		}
 	}
 
-	textReader_putChar(reader, c);
-
 	getmaxyx(stdscr, reader->h, reader->w);
-	
+
+	textReader_putChar(reader, c);
 	// Print the buffer into screen
 	textReader_print(reader);
 

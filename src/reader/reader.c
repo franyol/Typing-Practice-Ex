@@ -1,21 +1,12 @@
 #include "include/reader.h"
 #include <unistd.h>
 
-// Helper Funcitons
-static unsigned int countdownColumns(TextReader *self) {
-	int count = 0;
-	for (int i = self->writeindex; i > 0 && self->pagebuff[i] != '\n'; i--) {
-		count++;
-	}
-	return count;
-}
-
-
 unsigned int textReader_linesBetween(TextReader *self, unsigned int start, unsigned int end) {
 	int count = 0;
 	int index = 0;
 	for (; start <= end; start++) {
-		if(self->pagebuff[start] == '\n' || index >= self->w) {
+		index++;
+		if(self->pagebuff[start] == '\n' || index >= self->w - 7) {
 			index = 0;
 			count++;
 		}
@@ -59,14 +50,22 @@ int textReader_pageDown(TextReader *self) {
 }
 
 void textReader_lineUp(TextReader *self, int n) {
+	int j = 0;
 	for (int i = 0; i < n; i++) {
-		while(self->index < self->buffSize && self->pagebuff[self->index++] != '\n');
+		while(self->index < self->buffSize) {
+			if (self->pagebuff[self->index++] != '\n') break;
+			if (self->column + j++ >= self->w - 7) break;
+		}
 	}
 }
 
 void textReader_lineDown(TextReader *self, int n) {
+	int j = 0;
 	for (int i = 0; i < n; i++) {
-		while(self->index > 0 && self->pagebuff[self->index--] != '\n');
+		while(self->index > 0) {
+			if (self->pagebuff[self->index--] != '\n') break;
+			if (self->column - j++ < 0) break;
+		}
 	}
 }
 
@@ -76,33 +75,29 @@ void textReader_putChar(TextReader* self, int c) {
 			self->writebuff[self->writeindex] = 'b';
 
 			self->writeindex--;
-			if (self->column == 0) {
-				self->line--;
-				self->column = countdownColumns(self);
-				textReader_lineDown(self, 1);
-			} else {
-				self->column--;
-			}
 		} else {
 
 			if (c == self->pagebuff[self->writeindex])
 				self->writebuff[self->writeindex++] = 'g';
 			else
 				self->writebuff[self->writeindex++] = 'r';
-
-			if (self->writeindex > 0 && self->pagebuff[self->writeindex-1] == '\n') {
-				self->line ++;
-				self->column = 0;
-				if (textReader_linesBetween(self, self->index, self->writeindex) > (self->h/2))
-					textReader_lineUp(self, 1);
-			}
 		}
 	}
 }
 
 void textReader_print(TextReader* self) {
 	move(self->y, self->x);
-	int index = self->index;
+
+	int index, lines = 0, count = 0;
+	for (index=self->writeindex; lines <= self->h/2 && index > 0;) {
+		index--;
+		count++;
+		if (self->pagebuff[index] == '\n' || count >= self->w - 7) {
+				lines++;
+				count = 0;
+		}
+	}
+	self->index = index;
 
 	unsigned int cur_line = textReader_curLine(self) + 1;
 
@@ -129,6 +124,8 @@ void textReader_print(TextReader* self) {
 			// Blinking cursor
 			if (index == self->writeindex) {
 				attrset(A_BLINK | COLOR_PAIR(CURSOR));
+				self->column = col;
+				self->line = line;
 			}
 
 			if (self->pagebuff[index] == '\n') {
