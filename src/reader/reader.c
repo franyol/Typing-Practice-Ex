@@ -21,9 +21,6 @@ int textReader_fillBuffer(TextReader *self) {
 
 int textReader_pageUp(TextReader *self) {
 	self->page++;
-	self->line = 0;
-	self->column = 0;
-	self->index = 0;
 	self->writeindex = 0;
 
 	int resp = textReader_fillBuffer(self);
@@ -35,20 +32,21 @@ int textReader_pageUp(TextReader *self) {
 }
 
 int textReader_pageDown(TextReader *self) {
-	if (self->page < 1) return 0;
-	if (lseek(self->fd, -self->buffSize, SEEK_CUR) == -1) {
+	if (self->page < 1) {
+		self->writeindex = 0;
+		return 0;
+	}
+	int cur;
+	if ((cur = lseek(self->fd, -(self->buffSize*2), SEEK_CUR)) == -1) {
 		perror("lseek");
-		close(self->fd);
 		return -1;
 	}
 
 	self->page--;
-	self->line = 0;
-	self->column = 0;
-	self->index = 0;
-	self->writeindex = 0;
 
-	return textReader_fillBuffer(self);
+	textReader_fillBuffer(self);
+	self->writeindex = self->bytesRead;
+	return cur;
 }
 
 void textReader_lineUp(TextReader *self, int n) {

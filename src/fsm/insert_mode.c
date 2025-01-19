@@ -31,7 +31,9 @@ int insert_mode_update(FSM_State *self, struct timeval *dt) {
 
 	clear_win();
 
-	if (textReader_isBufferEnd(reader)) {
+	if (reader->writeindex < reader->index) {
+		textReader_pageDown(reader);
+	} else if (textReader_isBufferEnd(reader)) {
 		if (textReader_isPageEnd(reader)) {
 			textReader_pageUp(reader);
 		} else {
@@ -41,9 +43,10 @@ int insert_mode_update(FSM_State *self, struct timeval *dt) {
 
 	getmaxyx(stdscr, reader->h, reader->w);
 
-	textReader_putChar(reader, c);
 	// Print the buffer into screen
 	textReader_print(reader);
+
+	textReader_putChar(reader, c);
 
 	return INSERT;
 }

@@ -18,11 +18,11 @@ typedef struct {
 	int h;
 	int w;
 
-	unsigned int page;      	// Current page number
-	unsigned int line;			// Current line number
-	unsigned int column;		// Current column number
-	unsigned int index;			// Current buffer index (where the visible text begins)
-	unsigned int writeindex; 	// Current buffer index for writing
+	int page;      	// Current page number
+	int line;			// Current line number
+	int column;		// Current column number
+	int index;			// Current buffer index (where the visible text begins)
+	int writeindex; 	// Current buffer index for writing
 	char *pagebuff;				// Buffer containing the text read from the file
 	char *writebuff;			// Contains information about text highligting
 	int fd;						// File descriptor
