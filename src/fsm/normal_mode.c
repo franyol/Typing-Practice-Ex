@@ -12,7 +12,6 @@ void normal_mode_on_enter(FSM_State *self, const void *arg) {
 int normal_mode_update(FSM_State *self, struct timeval *dt) {
 	IModeData* this = (IModeData*) self->data;
 	TextReader* reader = this->reader;
-	static int debug;
 	
 	Command com;
 	input_getKey(&com);
@@ -24,7 +23,7 @@ int normal_mode_update(FSM_State *self, struct timeval *dt) {
 	clear_win();
 
 	if (reader->writeindex < 0) {
-		debug = textReader_pageDown(reader);
+		textReader_pageDown(reader);
 	} else if (textReader_isBufferEnd(reader)) {
 		if (textReader_isPageEnd(reader)) {
 			textReader_pageUp(reader);
@@ -57,7 +56,7 @@ int normal_mode_update(FSM_State *self, struct timeval *dt) {
 
 
 	//mvprintw(0, 0, "com: %s ", (com == COM_UNUSED) ? "unused" : "used" );
-	mvprintw(5, 0, "page: %d wrideindex: %d readerindex: %d, seek: %d", reader->page, reader->writeindex, reader->index, debug );
+	//mvprintw(5, 0, "page: %d wrideindex: %d readerindex: %d, seek: %d", reader->page, reader->writeindex, reader->index, debug );
 
 	return NORMAL;
 }
