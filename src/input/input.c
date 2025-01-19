@@ -19,12 +19,12 @@ void input_init() {
 
 	keyBindings[27] = COM_NORMAL_MODE; // Esc key
 									   
-	keyBindings['i'] = COM_INPUT_MODE;
-	keyBindings['I'] = COM_INPUT_MODE;
-	keyBindings['o'] = COM_INPUT_MODE;
-	keyBindings['O'] = COM_INPUT_MODE;
-	keyBindings['a'] = COM_INPUT_MODE;
-	keyBindings['A'] = COM_INPUT_MODE;
+	keyBindings['i'] = COM_INSERT_MODE;
+	keyBindings['I'] = COM_INSERT_MODE;
+	keyBindings['o'] = COM_INSERT_MODE;
+	keyBindings['O'] = COM_INSERT_MODE;
+	keyBindings['a'] = COM_INSERT_MODE;
+	keyBindings['A'] = COM_INSERT_MODE;
 
 	keyBindings['v'] = COM_VISUAL_MODE;
 
@@ -34,6 +34,11 @@ void input_init() {
 int input_getKey(Command* com) {
 	int c = getch();
 	flushinp();
-	if (com != NULL) *com = keyBindings[c];
+	if (com != NULL) {
+		if (c == ERR)
+			*com = COM_UNUSED;
+		else
+			*com = keyBindings[c];
+	}
 	return c;
 }

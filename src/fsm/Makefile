@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -I./include -I../input/include -I../reader/include -lncurses
+CFLAGS = -Wall -I./include -I../input/include -I../reader/include -lncurses -fanalyzer -Wanalyzer-too-complex
 
 BIN_DIR = ./bin
 TEST_DIR = ./tests

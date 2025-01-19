@@ -40,6 +40,7 @@ static void mainLoop( int freq, char *filename ) {
 	
 	FSM_State states[] = {
 		{INSERT, &insert_data, insert_mode_on_enter, insert_mode_on_exit, insert_mode_update},
+		{NORMAL, &insert_data, normal_mode_on_enter, normal_mode_on_exit, normal_mode_update},
 	};
 	FSM fsm = {states, sizeof(states)/sizeof(FSM_State), -1};
 

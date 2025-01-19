@@ -7,5 +7,5 @@ int main(int argc, char *argv[]) {
 		exit(EXIT_FAILURE);
 	}
 
-	fsm_runMainLoop(300, argv[1]);	
+	fsm_runMainLoop(30, argv[1]);	
 }

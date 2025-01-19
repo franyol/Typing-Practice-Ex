@@ -7,7 +7,8 @@
 #include <ncurses.h>
 
 typedef enum Mode {
-	INSERT
+	INSERT,
+	NORMAL
 } Mode;
 
 typedef struct IModeData {
@@ -18,11 +19,20 @@ typedef struct IModeArg {
 	int x;
 } IModeArg;
 
+typedef struct NModeData {
+	TextReader *reader;	
+} NModeData;
+
+typedef struct NModeArg {
+	int x;
+} NModeArg;
+
 #define DECLARE_STATE(type) \
 	void type##_on_exit(FSM_State *self, void **arg); \
 	int type##_update(FSM_State *self, struct timeval *dt); \
 	void type##_on_enter(FSM_State *self, const void *arg);
 
 DECLARE_STATE(insert_mode);
+DECLARE_STATE(normal_mode);
 
 #endif

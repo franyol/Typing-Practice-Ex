@@ -26,10 +26,12 @@ int textReader_pageUp(TextReader *self) {
 	self->index = 0;
 	self->writeindex = 0;
 
+	int resp = textReader_fillBuffer(self);
+
 	for (int i = 0; i < self->bytesRead; i++)
 		self->writebuff[i] = 'b';
 
-	return textReader_fillBuffer(self);
+	return resp;
 }
 
 int textReader_pageDown(TextReader *self) {
@@ -52,20 +54,35 @@ int textReader_pageDown(TextReader *self) {
 void textReader_lineUp(TextReader *self, int n) {
 	int j = 0;
 	for (int i = 0; i < n; i++) {
-		while(self->index < self->buffSize) {
-			if (self->pagebuff[self->index++] != '\n') break;
+		while(self->writeindex < self->buffSize) {
+			if (self->pagebuff[self->writeindex++] == '\n') break;
 			if (self->column + j++ >= self->w - 7) break;
 		}
+	}
+	for (j = 0;
+			self->writeindex < self->buffSize &&
+			self->pagebuff[self->writeindex] != '\n' &&
+			j < self->column;
+	j++) {
+		self->writeindex++;
 	}
 }
 
 void textReader_lineDown(TextReader *self, int n) {
 	int j = 0;
-	for (int i = 0; i < n; i++) {
-		while(self->index > 0) {
-			if (self->pagebuff[self->index--] != '\n') break;
+	for (int i = 0; i < n+1; i++) {
+		while(self->writeindex > 0) {
+			if (self->pagebuff[--self->writeindex] == '\n') break;
 			if (self->column - j++ < 0) break;
 		}
+	}
+	self->writeindex++;
+	for (j = 0;
+			self->writeindex < self->buffSize &&
+			self->pagebuff[self->writeindex] != '\n' &&
+			j < self->column;
+	j++) {
+		self->writeindex++;
 	}
 }
 

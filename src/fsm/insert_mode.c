@@ -26,7 +26,7 @@ int insert_mode_update(FSM_State *self, struct timeval *dt) {
 	int c = input_getKey(&com);
 
 	if (com == COM_NORMAL_MODE) {
-		return -1;
+		return NORMAL;
 	}
 
 	clear_win();
