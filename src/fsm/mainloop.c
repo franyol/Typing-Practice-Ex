@@ -73,6 +73,8 @@ static void mainLoop( int freq, char *filename ) {
 
 		refresh();
 	}
+
+	close(fd);
 }
 
 int fsm_runMainLoop(int fps, char *filename) {
