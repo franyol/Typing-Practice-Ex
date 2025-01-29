@@ -31,7 +31,7 @@ int insert_mode_update(FSM_State *self, struct timeval *dt) {
 
 	clear_win();
 
-	if (reader->writeindex < reader->index) {
+	if (reader->writeindex < 0) {
 		textReader_pageDown(reader);
 	} else if (textReader_isBufferEnd(reader)) {
 		if (textReader_isPageEnd(reader)) {

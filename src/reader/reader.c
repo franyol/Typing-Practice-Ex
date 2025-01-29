@@ -45,7 +45,7 @@ int textReader_pageDown(TextReader *self) {
 	self->page--;
 
 	textReader_fillBuffer(self);
-	self->writeindex = self->bytesRead;
+	self->writeindex = self->bytesRead-1;
 	return cur;
 }
 
@@ -117,11 +117,11 @@ void textReader_print(TextReader* self) {
 	unsigned int cur_line = textReader_curLine(self) + 1;
 
 	for (int line = 0; line < self->h; line++) {
-		if (index > self->bytesRead) break;
+		if (index >= self->bytesRead) break;
 		printw("%5d ", cur_line+line);
 
 		for (int col = 0; 1; col++) {
-			if (index > self->bytesRead) break;
+			if (index >= self->bytesRead) break;
 			if (col >= self->w-7) {
 				printw("\n");
 				break;

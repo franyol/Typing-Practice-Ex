@@ -6,7 +6,7 @@
 #include <fcntl.h>
 #include "draw_utils.h"
 
-#define textReader_isBufferEnd(reader) (reader->writeindex > reader->bytesRead)
+#define textReader_isBufferEnd(reader) (reader->writeindex >= reader->bytesRead)
 #define textReader_isPageEnd(reader) (reader->buffSize == reader->bytesRead)
 #define textReader_curLine(reader) (textReader_linesBetween(reader, 0, reader->index))
 #define textReader_linesTillEnd(reader) (textReader_linesBetween(reader, reader->index, reader->bytesRead))
