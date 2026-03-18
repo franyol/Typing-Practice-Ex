@@ -1,5 +1,6 @@
 #include "include/reader.h"
 #include <unistd.h>
+#include <string.h>
 
 unsigned int textReader_linesBetween(TextReader *self, unsigned int start, unsigned int end) {
 	int count = 0;
@@ -147,9 +148,12 @@ void textReader_print(TextReader* self) {
 				self->column = col;
 				self->line = line;
 
+                // Cache current colum
                 if (self->cache_column < 0) {
                     self->cache_column = self->column;
                 }
+                // Check if we are on last column
+                self->on_last_column = (index != self->bytesRead && self->pagebuff[index+1] == '\n');
 			}
 
 			if (self->pagebuff[index] == '\n') {
@@ -164,4 +168,13 @@ void textReader_print(TextReader* self) {
 			index++;
 		}
 	}
+
+    if (strcmp(self->message, "")) {
+        // Print message on half of the screen
+
+        attrset(A_NORMAL | COLOR_PAIR(BLUE));
+        move(self->h+1, 0);
+        printw("%s", self->message);
+        attrset(A_NORMAL | COLOR_PAIR(BLACK));
+    }
 }

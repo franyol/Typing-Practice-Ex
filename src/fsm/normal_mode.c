@@ -2,6 +2,7 @@
 #include "input.h"
 #include "draw_utils.h"
 #include <unistd.h>
+#include <string.h>
 
 int lines_between(char *buf, int start, int end);
 
@@ -33,6 +34,9 @@ int normal_mode_update(FSM_State *self, struct timeval *dt) {
 	}
 
 	getmaxyx(stdscr, reader->h, reader->w);
+    if (strcmp(reader->message, "")) {
+        reader->h = reader->h >> 1;
+    }
 
 	// Print the buffer into screen
 	textReader_print(reader);

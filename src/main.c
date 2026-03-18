@@ -19,9 +19,9 @@ int main(int argc, char *argv[]) {
 			if (*endptr != '\0')
 				exit(EXIT_FAILURE);
 
-			vim_runMainLoop(30, section);	
+			vim_runMainLoop(30, section);
 		}
 	}
 
-	fsm_runMainLoop(30, argv[1]);	
+	fsm_runMainLoop(30, argv[1]);
 }

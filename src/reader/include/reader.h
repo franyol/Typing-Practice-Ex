@@ -18,10 +18,12 @@ typedef struct {
 	int h;
 	int w;
 
+    const char* message;  // Debug message
 	int page;      	// Current page number
 	int line;			// Current line number
 	int column;		// Current column number
-    int cache_column;
+    int cache_column; // Used to save the curr column when moving lines on normal mode
+    int on_last_column; // bool, used for moving lines on normal mode
 	int index;			// Current buffer index (where the visible text begins)
 	int writeindex; 	// Current buffer index for writing
 	char *pagebuff;				// Buffer containing the text read from the file

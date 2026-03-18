@@ -25,10 +25,12 @@ static void mainLoop( int freq, char *filename ) {
 	static TextReader reader;
 	static IModeData insert_data;
 
+    reader.message = "Mensajito\nYuju";
 	reader.page = 0;
 	reader.line = 0;
 	reader.column = 0;
     reader.cache_column = 0;
+    reader.on_last_column = 0;
 	reader.index = 0;
 	reader.writeindex = 0;
 	reader.pagebuff = pageBuff;
@@ -36,6 +38,8 @@ static void mainLoop( int freq, char *filename ) {
 	reader.fd = fd;
 	reader.buffSize = 8192;
 	reader.bytesRead = 0;
+
+	getmaxyx(stdscr, reader.h, reader.w);
 
 	insert_data.reader = &reader;
 
