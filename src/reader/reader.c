@@ -54,13 +54,15 @@ void textReader_lineUp(TextReader *self, int n) {
 	for (int i = 0; i < n; i++) {
 		while(self->writeindex < self->buffSize) {
 			if (self->pagebuff[self->writeindex++] == '\n') break;
-			if (self->column + j++ >= self->w - 7) break;
+			//if (self->column + j++ >= self->w - 7) break;
 		}
 	}
+
+    // Move cursor to target = cache column
 	for (j = 0;
 			self->writeindex < self->buffSize &&
 			self->pagebuff[self->writeindex] != '\n' &&
-			j < self->column;
+			j < self->cache_column;
 	j++) {
 		self->writeindex++;
 	}
@@ -71,14 +73,14 @@ void textReader_lineDown(TextReader *self, int n) {
 	for (int i = 0; i < n+1; i++) {
 		while(self->writeindex > 0) {
 			if (self->pagebuff[--self->writeindex] == '\n') break;
-			if (self->column - j++ < 0) break;
+			//if (self->column - j++ < 0) break;
 		}
 	}
 	self->writeindex++;
 	for (j = 0;
 			self->writeindex < self->buffSize &&
 			self->pagebuff[self->writeindex] != '\n' &&
-			j < self->column;
+			j < self->cache_column;
 	j++) {
 		self->writeindex++;
 	}
@@ -97,6 +99,7 @@ void textReader_putChar(TextReader* self, int c) {
 			else
 				self->writebuff[self->writeindex++] = 'r';
 		}
+        self->cache_column = -1; // Update cache column on next print
 	}
 }
 
@@ -122,10 +125,12 @@ void textReader_print(TextReader* self) {
 
 		for (int col = 0; 1; col++) {
 			if (index >= self->bytesRead) break;
-			if (col >= self->w-7) {
+
+            // Add a line skip when the window is full
+			/*if (col >= self->w-7) {
 				printw("\n");
 				break;
-			}
+			}*/
 
 			switch (self->writebuff[index]) {
 				case 'g':
@@ -141,6 +146,10 @@ void textReader_print(TextReader* self) {
 				attrset(A_BLINK | COLOR_PAIR(CURSOR));
 				self->column = col;
 				self->line = line;
+
+                if (self->cache_column < 0) {
+                    self->cache_column = self->column;
+                }
 			}
 
 			if (self->pagebuff[index] == '\n') {

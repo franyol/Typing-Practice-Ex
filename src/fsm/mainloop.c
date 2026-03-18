@@ -28,6 +28,7 @@ static void mainLoop( int freq, char *filename ) {
 	reader.page = 0;
 	reader.line = 0;
 	reader.column = 0;
+    reader.cache_column = 0;
 	reader.index = 0;
 	reader.writeindex = 0;
 	reader.pagebuff = pageBuff;
@@ -37,7 +38,7 @@ static void mainLoop( int freq, char *filename ) {
 	reader.bytesRead = 0;
 
 	insert_data.reader = &reader;
-	
+
 	FSM_State states[] = {
 		{INSERT, &insert_data, insert_mode_on_enter, insert_mode_on_exit, insert_mode_update},
 		{NORMAL, &insert_data, normal_mode_on_enter, normal_mode_on_exit, normal_mode_update},
@@ -57,7 +58,7 @@ static void mainLoop( int freq, char *filename ) {
 	for (;;) {
 		fsm_update(&fsm, &elapsed);
 		if (fsm.current == -1) break;
-	
+
 		do {
 			if (gettimeofday(&end, NULL) != 0) {
 				fprintf(stderr, "gettimeofday error\n");
@@ -66,7 +67,7 @@ static void mainLoop( int freq, char *filename ) {
 
 			elapsed.tv_sec = end.tv_sec - start.tv_sec;
 			elapsed.tv_usec = end.tv_usec - start.tv_usec;
-		} while( freq > 0 && ((f.tv_sec > elapsed.tv_sec) || 
+		} while( freq > 0 && ((f.tv_sec > elapsed.tv_sec) ||
 				(f.tv_sec == elapsed.tv_sec && f.tv_usec > elapsed.tv_usec)) );
 
 		start = end;

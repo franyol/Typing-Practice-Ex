@@ -12,7 +12,7 @@ void normal_mode_on_enter(FSM_State *self, const void *arg) {
 int normal_mode_update(FSM_State *self, struct timeval *dt) {
 	IModeData* this = (IModeData*) self->data;
 	TextReader* reader = this->reader;
-	
+
 	Command com;
 	input_getKey(&com);
 
@@ -46,9 +46,11 @@ int normal_mode_update(FSM_State *self, struct timeval *dt) {
 			break;
 		case COM_LEFT:
 			reader->writeindex--;
+            reader->cache_column = -1; // Update cache column on next print
 			break;
 		case COM_RIGHT:
 			reader->writeindex++;
+            reader->cache_column = -1; // Update cache column on next print
 			break;
 		default:
 			break;

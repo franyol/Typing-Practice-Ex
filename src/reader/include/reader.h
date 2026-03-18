@@ -21,6 +21,7 @@ typedef struct {
 	int page;      	// Current page number
 	int line;			// Current line number
 	int column;		// Current column number
+    int cache_column;
 	int index;			// Current buffer index (where the visible text begins)
 	int writeindex; 	// Current buffer index for writing
 	char *pagebuff;				// Buffer containing the text read from the file
