@@ -18,7 +18,7 @@ typedef struct {
 	int h;
 	int w;
 
-    const char* message;  // Debug message
+    char* message;  // Debug message
 	int page;      	// Current page number
 	int line;			// Current line number
 	int column;		// Current column number

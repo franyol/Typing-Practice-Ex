@@ -63,7 +63,7 @@ void textReader_lineUp(TextReader *self, int n) {
 	for (j = 0;
 			self->writeindex < self->buffSize &&
 			self->pagebuff[self->writeindex] != '\n' &&
-			j < self->cache_column;
+			(self->on_last_column ? 1 : j < self->cache_column);
 	j++) {
 		self->writeindex++;
 	}
@@ -78,10 +78,11 @@ void textReader_lineDown(TextReader *self, int n) {
 		}
 	}
 	self->writeindex++;
+
 	for (j = 0;
 			self->writeindex < self->buffSize &&
 			self->pagebuff[self->writeindex] != '\n' &&
-			j < self->cache_column;
+			(self->on_last_column ? 1 : j < self->cache_column);
 	j++) {
 		self->writeindex++;
 	}
@@ -151,9 +152,17 @@ void textReader_print(TextReader* self) {
                 // Cache current colum
                 if (self->cache_column < 0) {
                     self->cache_column = self->column;
+
+                    // Check if we are on last column
+                    self->on_last_column = (col != 0 && index != self->bytesRead && self->pagebuff[index] == '\n');
                 }
-                // Check if we are on last column
-                self->on_last_column = (index != self->bytesRead && self->pagebuff[index+1] == '\n');
+
+                // DEBUG
+                /*if (self->on_last_column) {
+                    self->message = "ON LAST COLUMN: TRUE";
+                } else {
+                    self->message = "ON LAST COLUMN: FALSE";
+                }*/
 			}
 
 			if (self->pagebuff[index] == '\n') {
