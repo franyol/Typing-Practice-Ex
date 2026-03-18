@@ -1,7 +1,7 @@
 CC = gcc
-CFLAGS = -Wall -I./fsm/include -I./input/include -I./reader/include
-LDFLAGS = -L./fsm/bin -L./input/bin -L./reader/bin -lncurses -lfsm -linput -lreader
-LIBS = ./fsm/bin/libfsm.a ./input/bin/libinput.a ./reader/bin/libreader.a
+CFLAGS = -Wall -I./fsm/include -I./input/include -I./reader/include -I./vim/include
+LDFLAGS = -L./fsm/bin -L./input/bin -L./reader/bin -L./vim/bin -lncurses -lfsm -linput -lreader -lvimo
+LIBS = ./fsm/bin/libfsm.a ./input/bin/libinput.a ./reader/bin/libreader.a ./vim/bin/libvimo.a
 
 BIN_DIR = ./bin
 
@@ -24,11 +24,13 @@ $(LIBS):
 	$(MAKE) -C reader
 	$(MAKE) -C input
 	$(MAKE) -C fsm
+	$(MAKE) -C vim
 
 clean:
 	rm -rf $(BIN_DIR)
 	$(MAKE) -C fsm clean
 	$(MAKE) -C input clean
 	$(MAKE) -C reader clean
+	$(MAKE) -C vim clean
 
 .PHONY: all clean

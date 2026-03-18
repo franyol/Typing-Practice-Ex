@@ -3,3 +3,6 @@ CompileFlags:
     - -I./fsm/include
     - -L./fsm
     - -lfsm
+    - -I./vim/include
+    - -L./vim
+    - -lvim

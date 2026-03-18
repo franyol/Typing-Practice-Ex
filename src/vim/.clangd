@@ -1,0 +1,11 @@
+CompileFlags:
+  Add: 
+    - -I../input/include
+    - -L../input
+    - -linput
+    - -I../fsm/include
+    - -L../fsm
+    - -lfsm
+    - -I../reader/include
+    - -L../reader
+    - -lreader
