@@ -129,10 +129,10 @@ void textReader_print(TextReader* self) {
 			if (index >= self->bytesRead) break;
 
             // Add a line skip when the window is full
-			/*if (col >= self->w-7) {
+			if (col >= self->w-7) {
 				printw("\n");
 				break;
-			}*/
+			}
 
 			switch (self->writebuff[index]) {
 				case 'g':
