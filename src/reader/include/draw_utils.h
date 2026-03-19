@@ -9,7 +9,8 @@ typedef enum Color {
 	BLUE,
 	YELLOW,
 	GREEN,
-	CURSOR
+	CURSOR,
+    HIGHLIGHT
 } Color;
 
 void init_colors();

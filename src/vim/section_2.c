@@ -1,17 +1,24 @@
 #include "include/sections.h"
 #include "input.h"
 
-void section_1_on_enter(FSM_State *self, const void *arg) {
+enum {
+    GET_COMMAND,
+    MOVE
+} state = GET_COMMAND;
+
+void section_2_on_enter(FSM_State *self, const void *arg) {
 
 }
 
-int section_1_update(FSM_State *self, struct timeval *dt) {
+int section_2_update(FSM_State *self, struct timeval *dt) {
 
 	Command com;
 	int c = input_getKey(&com);
 
 	if (c == 'q') return -1;
 
+
+    // Visual
 	clear_win();
 
 	static int h, w;
@@ -21,6 +28,6 @@ int section_1_update(FSM_State *self, struct timeval *dt) {
 	return SECTION_1;
 }
 
-void section_1_on_exit(FSM_State *self, void **arg) {
+void section_2_on_exit(FSM_State *self, void **arg) {
 
 }

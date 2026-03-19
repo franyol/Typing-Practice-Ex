@@ -12,7 +12,19 @@ typedef enum {
 	COM_INSERT_MODE,
 	COM_VISUAL_MODE,
 	COM_SEARCH,
-	COM_UNUSED
+	COM_UNUSED,
+    COM_LOWCASE_G,
+    COM_LOWCASE_WORD,
+    COM_WORD,
+    COM_END_WORD,
+    COM_LOWCASE_END_WORD,
+    COM_LOWCASE_BACK,
+    COM_BACK,
+    COM_REL_START,
+    COM_ABS_START,
+    COM_END,
+    COM_FIND,
+    COM_MATCH_PAIRS,
 } Command;
 
 void input_init();
