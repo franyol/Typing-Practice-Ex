@@ -141,6 +141,9 @@ void textReader_print(TextReader* self) {
 				case 'r':
 					attrset(A_NORMAL | COLOR_PAIR(RED));
 					break;
+				case 'h':
+					attrset(A_NORMAL | COLOR_PAIR(HIGHLIGHT));
+					break;
 			}
 
 			// Blinking cursor
@@ -182,7 +185,7 @@ void textReader_print(TextReader* self) {
         // Print message on half of the screen
 
         attrset(A_NORMAL | COLOR_PAIR(BLUE));
-        move(self->h+1, 0);
+        move(self->h+2, 0);
         printw("%s", self->message);
         attrset(A_NORMAL | COLOR_PAIR(BLACK));
     }

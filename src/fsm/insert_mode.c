@@ -44,7 +44,7 @@ int insert_mode_update(FSM_State *self, struct timeval *dt) {
 
 	getmaxyx(stdscr, reader->h, reader->w);
     if (strcmp(reader->message, "")) {
-        reader->h = reader->h >> 1;
+        reader->h = reader->h * 0.7;
     }
 
 	// Print the buffer into screen

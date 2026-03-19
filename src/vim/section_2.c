@@ -1,5 +1,6 @@
 #include "include/sections.h"
 #include "input.h"
+#include <string.h>
 
 enum {
     LOAD_TEXT,
@@ -51,6 +52,9 @@ int section_2_update(FSM_State *self, struct timeval *dt) {
 	clear_win();
 
 	getmaxyx(stdscr, reader->h, reader->w);
+    if (strcmp(reader->message, "")) {
+        reader->h = reader->h * 0.7;
+    }
 
     textReader_print(reader);
 

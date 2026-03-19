@@ -28,6 +28,7 @@ typedef struct {
 	int writeindex; 	// Current buffer index for writing
 	char *pagebuff;				// Buffer containing the text read from the file
 	char *writebuff;			// Contains information about text highligting
+                                // g: green, r: red, b: blank, h: highlight
 	int fd;						// File descriptor
 	int buffSize;				// Buffer max size
 	ssize_t bytesRead;			// Number of bytes saved on buffer from the last read
