@@ -23,9 +23,9 @@ int section_2_update(FSM_State *self, struct timeval *dt) {
 
 	static int h, w;
 	getmaxyx(stdscr, h, w);
-	mvprintw(h/2, w/2, "About the manuals, press q to quit");
+	mvprintw(h/2, w/2, "Section 2, press q to quit");
 
-	return SECTION_1;
+	return SECTION_2;
 }
 
 void section_2_on_exit(FSM_State *self, void **arg) {
