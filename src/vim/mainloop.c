@@ -14,10 +14,26 @@
 static void mainLoop( int freq, long section ) {
 	struct timeval elapsed, f, start, end;
 
+	static char pageBuff[8192];
+	static char writeBuff[8192];
+	static TextReader reader;
+    reader.pagebuff = pageBuff;
+    reader.writebuff = writeBuff;
+    reader.message = "";
+	reader.page = 0;
+	reader.line = 0;
+	reader.column = 0;
+    reader.cache_column = 0;
+    reader.on_last_column = 0;
+	reader.index = 0;
+	reader.writeindex = 0;
+	//reader.fd = fd;
+	reader.buffSize = 8192;
+	reader.bytesRead = 0;
 
 	FSM_State states[] = {
 		{INSERT, NULL, section_1_on_enter, section_1_on_exit, section_1_update},
-		{INSERT, NULL, section_2_on_enter, section_2_on_exit, section_2_update},
+		{INSERT, &reader, section_2_on_enter, section_2_on_exit, section_2_update},
 	};
 	FSM fsm = {states, sizeof(states)/sizeof(FSM_State), section-1};
 

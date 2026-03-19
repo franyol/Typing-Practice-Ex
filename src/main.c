@@ -3,6 +3,7 @@
 #include "string.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 int main(int argc, char *argv[]) {
 	if (argc < 2) {
@@ -10,6 +11,8 @@ int main(int argc, char *argv[]) {
 		fprintf(stderr, "Usage: %s vim [section:int]\n", argv[0]);
 		exit(EXIT_FAILURE);
 	}
+
+    srand(time(NULL));
 
 	if (strcmp(argv[1], "vim") == 0) {
 		if (argc > 2) {
