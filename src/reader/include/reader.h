@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include "draw_utils.h"
+#include "../../input/include/input.h"
 
 #define textReader_isBufferEnd(reader) (reader->writeindex >= reader->bytesRead)
 #define textReader_isPageEnd(reader) (reader->buffSize == reader->bytesRead)
@@ -42,7 +43,7 @@ int textReader_fillBuffer(TextReader* self);
 /*
  * read the next page
  *
- * each page is of the size of the buffer
+ * each page is the size than the buffer
  */
 int textReader_pageUp(TextReader* self);
 
@@ -75,5 +76,10 @@ void textReader_putChar(TextReader* self, int c);
  * This function requires start_colors from draw_utils.h
  */
 void textReader_print(TextReader* self);
+
+/*
+ *  Handles normal mode movement command keybindings
+ */
+void textReader_normal_mode_key_handler(TextReader* self, int c, Command com);
 
 #endif

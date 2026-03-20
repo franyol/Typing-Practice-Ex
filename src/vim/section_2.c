@@ -54,24 +54,7 @@ int section_2_update(FSM_State *self, struct timeval *dt) {
 
             if (c == 'q') return -1;
 
-            switch (com) {
-                case COM_UP:
-                    textReader_lineDown(reader, 1);
-                    break;
-                case COM_DOWN:
-                    textReader_lineUp(reader, 1);
-                    break;
-                case COM_LEFT:
-                    reader->writeindex--;
-                    reader->cache_column = -1; // Update cache column on next print
-                    break;
-                case COM_RIGHT:
-                    reader->writeindex++;
-                    reader->cache_column = -1; // Update cache column on next print
-                    break;
-                default:
-                    break;
-            }
+            textReader_normal_mode_key_handler(reader, c, com);
 
             if (reader->writeindex == target) state = NEXT_TARGET;
 

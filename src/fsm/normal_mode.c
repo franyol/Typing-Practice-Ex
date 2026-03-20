@@ -15,7 +15,7 @@ int normal_mode_update(FSM_State *self, struct timeval *dt) {
 	TextReader* reader = this->reader;
 
 	Command com;
-	input_getKey(&com);
+	int c = input_getKey(&com);
 
 	if (com == COM_INSERT_MODE) {
 		return INSERT;
@@ -41,25 +41,7 @@ int normal_mode_update(FSM_State *self, struct timeval *dt) {
 	// Print the buffer into screen
 	textReader_print(reader);
 
-	switch (com) {
-		case COM_UP:
-			textReader_lineDown(reader, 1);
-			break;
-		case COM_DOWN:
-			textReader_lineUp(reader, 1);
-			break;
-		case COM_LEFT:
-			reader->writeindex--;
-            reader->cache_column = -1; // Update cache column on next print
-			break;
-		case COM_RIGHT:
-			reader->writeindex++;
-            reader->cache_column = -1; // Update cache column on next print
-			break;
-		default:
-			break;
-	}
-
+    textReader_normal_mode_key_handler(reader, c, com);
 
 	//mvprintw(0, 0, "com: %s ", (com == COM_UNUSED) ? "unused" : "used" );
 	//mvprintw(5, 0, "page: %d wrideindex: %d readerindex: %d, seek: %d", reader->page, reader->writeindex, reader->index, debug );
