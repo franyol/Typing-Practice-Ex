@@ -53,15 +53,16 @@ int textReader_pageDown(TextReader *self) {
 void textReader_lineUp(TextReader *self, int n) {
 	int j = 0;
 	for (int i = 0; i < n; i++) {
-		while(self->writeindex < self->buffSize) {
-			if (self->pagebuff[self->writeindex++] == '\n') break;
+		while(self->writeindex < self->bytesRead) {
+			if (self->writeindex >= self->bytesRead-1 ||
+                    self->pagebuff[self->writeindex++] == '\n') break;
 			//if (self->column + j++ >= self->w - 7) break;
 		}
 	}
 
     // Move cursor to target = cache column
 	for (j = 0;
-			self->writeindex < self->buffSize &&
+			self->writeindex < self->bytesRead-1 &&
 			self->pagebuff[self->writeindex] != '\n' &&
 			(self->on_last_column ? 1 : j < self->cache_column);
 	j++) {
