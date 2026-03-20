@@ -38,11 +38,12 @@ void input_init() {
     keyBindings['b'] = COM_LOWCASE_BACK;
     keyBindings['B'] = COM_BACK;
     keyBindings['^'] = COM_REL_START;
+    keyBindings['_'] = COM_REL_START;
     keyBindings['0'] = COM_ABS_START;
     keyBindings['$'] = COM_END;
     keyBindings['f'] = COM_FIND;
     keyBindings['%'] = COM_MATCH_PAIRS;
-    keyBindings['?'] = COM_FIND_BACK;
+    keyBindings['F'] = COM_FIND_BACK;
     keyBindings['{'] = COM_LAST_PARAG;
     keyBindings['}'] = COM_NEXT_PARAG;
 }
