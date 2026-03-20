@@ -32,6 +32,7 @@ typedef struct {
 	int fd;						// File descriptor
 	int buffSize;				// Buffer max size
 	ssize_t bytesRead;			// Number of bytes saved on buffer from the last read
+    ssize_t bytesOnScreen;      // Number of bytes printed on screen
 } TextReader;
 
 unsigned int textReader_linesBetween(TextReader* self, unsigned int start, unsigned int end);

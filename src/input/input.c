@@ -42,6 +42,9 @@ void input_init() {
     keyBindings['$'] = COM_END;
     keyBindings['f'] = COM_FIND;
     keyBindings['%'] = COM_MATCH_PAIRS;
+    keyBindings['?'] = COM_FIND_BACK;
+    keyBindings['{'] = COM_LAST_PARAG;
+    keyBindings['}'] = COM_NEXT_PARAG;
 }
 
 int input_getKey(Command* com) {

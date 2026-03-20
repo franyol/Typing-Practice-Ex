@@ -24,7 +24,10 @@ typedef enum {
     COM_ABS_START,
     COM_END,
     COM_FIND,
+    COM_FIND_BACK,
     COM_MATCH_PAIRS,
+    COM_NEXT_PARAG,
+    COM_LAST_PARAG,
 } Command;
 
 void input_init();

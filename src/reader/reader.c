@@ -121,6 +121,7 @@ void textReader_print(TextReader* self) {
 
 	unsigned int cur_line = textReader_curLine(self) + 1;
 
+    self->bytesOnScreen = 0;
 	for (int line = 0; line < self->h; line++) {
 		if (index >= self->bytesRead) break;
 		printw("%5d ", cur_line+line);
@@ -133,6 +134,7 @@ void textReader_print(TextReader* self) {
 				printw("\n");
 				break;
 			}
+            self->bytesOnScreen++;
 
 			switch (self->writebuff[index]) {
 				case 'g':
