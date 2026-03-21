@@ -88,17 +88,54 @@ void textReader_normal_mode_key_handler(TextReader *self, int c, Command com) {
         case COM_ABS_START:
             self->writeindex = self->writeindex - self->column;
             self->cache_column = -1;
+            c_buf[0] = n_buf[0] = '\0';
             break;
 
         case COM_REL_START:
             self->writeindex = self->writeindex - self->column;
             goto_next_non_blank(self);
             self->cache_column = -1;
+            c_buf[0] = n_buf[0] = '\0';
             break;
 
         case COM_END:
             goto_next_char(self, '\n');
             self->cache_column = -1;
+            c_buf[0] = n_buf[0] = '\0';
+            break;
+
+        case COM_LAST_PARAG:
+            n = strtol(n_buf, &endptr, 10);
+            if (*endptr != '\0' || n_buf[0] == '\0') n = 1;
+            for (int i = 0; i < n; i++) {
+                goto_prev_non_blank(self);
+                while (self->writeindex > 0 && !(
+                          self->pagebuff[self->writeindex-1] == '\n' &&
+                         self->pagebuff[self->writeindex] == '\n')) {
+                    self->writeindex--;
+                    goto_prev_char(self, '\n');
+                }
+            }
+
+            self->cache_column = -1;
+            c_buf[0] = n_buf[0] = '\0';
+            break;
+
+        case COM_NEXT_PARAG:
+            n = strtol(n_buf, &endptr, 10);
+            if (*endptr != '\0' || n_buf[0] == '\0') n = 1;
+            for (int i = 0; i < n; i++) {
+                goto_next_non_blank(self);
+                while (!(self->pagebuff[self->writeindex-1] == '\n' &&
+                        self->pagebuff[self->writeindex] == '\n')  &&
+                        self->writeindex < self->bytesRead) {
+                    self->writeindex++;
+                    goto_next_char(self, '\n');
+                }
+            }
+
+            self->cache_column = -1;
+            c_buf[0] = n_buf[0] = '\0';
             break;
 
         case COM_WORD:
