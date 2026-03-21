@@ -14,6 +14,10 @@ void goto_next_non_blank(TextReader* self);
 void goto_next_char(TextReader* self, char c);
 void goto_prev_char(TextReader* self, char c);
 
+void goto_prev_non_non_word(TextReader* self);
+void goto_prev_non_word(TextReader* self);
+void goto_prev_non_blank(TextReader* self);
+
 void append(char* buf, char c);
 
 void textReader_normal_mode_key_handler(TextReader *self, int c, Command com) {
@@ -133,6 +137,94 @@ void textReader_normal_mode_key_handler(TextReader *self, int c, Command com) {
             c_buf[0] = n_buf[0] = '\0';
             break;
 
+        case COM_LOWCASE_END_WORD:
+            n = strtol(n_buf, &endptr, 10);
+            if (*endptr != '\0' || n_buf[0] == '\0') n = 1;
+
+            if (c_buf[0] == 'g') {
+
+                for (int i = 0; i < n; i++) {
+                    // If in word, move to the start of the word
+                    if (is_word_char(self->pagebuff[self->writeindex])) {
+                        goto_prev_non_word(self);
+                    // If is non word, move to the start of the non word
+                    } else if (is_non_word_char(self->pagebuff[self->writeindex])) {
+                        goto_prev_non_non_word(self);
+                    }
+                    // Skip blank characters
+                    if (is_blank_char(self->pagebuff[self->writeindex])) {
+                        goto_prev_non_blank(self);
+                    }
+                }
+
+            } else {
+                for (int i = 0; i < n; i++) {
+                    if (self->writeindex < self->bytesRead &&
+                            is_blank_char(self->pagebuff[self->writeindex+1]) ||
+                            (is_word_char(self->pagebuff[self->writeindex]) ==
+                             is_non_word_char(self->pagebuff[self->writeindex+1]))
+                       )
+                        self->writeindex++;
+                    // Skip blank characters
+                    if (is_blank_char(self->pagebuff[self->writeindex])) {
+                        goto_next_non_blank(self);
+                    }
+                    // If in word, move to the end of the word
+                    if (is_word_char(self->pagebuff[self->writeindex])) {
+                        goto_next_non_word(self);
+                        self->writeindex--;
+                        // If is non word, move to the end of the non word
+                    } else if (is_non_word_char(self->pagebuff[self->writeindex])) {
+                        goto_next_non_non_word(self);
+                        self->writeindex--;
+                    }
+                }
+            }
+
+            self->cache_column = -1; // update cache column
+
+            c_buf[0] = n_buf[0] = '\0';
+            break;
+
+
+        case COM_END_WORD:
+            n = strtol(n_buf, &endptr, 10);
+            if (*endptr != '\0' || n_buf[0] == '\0') n = 1;
+
+            if (c_buf[0] == 'g') {
+
+                for (int i = 0; i < n; i++) {
+                    // Look for the last blank char
+                    while (is_word_char(self->pagebuff[self->writeindex]) ||
+                            is_non_word_char(self->pagebuff[self->writeindex])) {
+                        goto_prev_non_word(self);
+                        goto_prev_non_non_word(self);
+                    }
+                    // Skip blank characters
+                    if (is_blank_char(self->pagebuff[self->writeindex])) {
+                        goto_prev_non_blank(self);
+                    }
+                }
+
+            } else {
+                for (int i = 0; i < n; i++) {
+                    if (self->writeindex < self->bytesRead &&
+                            is_blank_char(self->pagebuff[self->writeindex+1]))
+                        self->writeindex++;
+                    goto_next_non_blank(self);
+                    while (is_word_char(self->pagebuff[self->writeindex]) ||
+                            is_non_word_char(self->pagebuff[self->writeindex])) {
+                        goto_next_non_word(self);
+                        goto_next_non_non_word(self);
+                    }
+                    self->writeindex--;
+                }
+            }
+
+            c_buf[0] = n_buf[0] = '\0';
+            break;
+
+
         case COM_UP:
             n = strtol(n_buf, &endptr, 10);
             if (*endptr != '\0' || n_buf[0] == '\0') n = 1;
@@ -204,6 +296,13 @@ void goto_next_non_word(TextReader* self) {
     }
 }
 
+void goto_prev_non_word(TextReader* self) {
+    while (is_word_char(self->pagebuff[self->writeindex])) {
+        if (self->writeindex <= 0) break;
+        self->writeindex--;
+    }
+}
+
 void goto_next_non_non_word(TextReader* self) {
     while (is_non_word_char(self->pagebuff[self->writeindex])) {
         if (self->writeindex >= self->bytesRead-1) break;
@@ -211,10 +310,24 @@ void goto_next_non_non_word(TextReader* self) {
     }
 }
 
+void goto_prev_non_non_word(TextReader* self) {
+    while (is_non_word_char(self->pagebuff[self->writeindex])) {
+        if (self->writeindex <= 0) break;
+        self->writeindex--;
+    }
+}
+
 void goto_next_non_blank(TextReader* self) {
     while (is_blank_char(self->pagebuff[self->writeindex])) {
         if (self->writeindex >= self->bytesRead-1) break;
         self->writeindex++;
+    }
+}
+
+void goto_prev_non_blank(TextReader* self) {
+    while (is_blank_char(self->pagebuff[self->writeindex])) {
+        if (self->writeindex <= 0) break;
+        self->writeindex--;
     }
 }
 
