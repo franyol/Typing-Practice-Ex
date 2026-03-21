@@ -137,6 +137,63 @@ void textReader_normal_mode_key_handler(TextReader *self, int c, Command com) {
             c_buf[0] = n_buf[0] = '\0';
             break;
 
+        case COM_LOWCASE_BACK:
+            n = strtol(n_buf, &endptr, 10);
+            if (*endptr != '\0' || n_buf[0] == '\0') n = 1;
+
+            for (int i = 0; i < n; i++) {
+                if (self->writeindex > 0 && (
+                        is_blank_char(self->pagebuff[self->writeindex-1]) ||
+                        (is_word_char(self->pagebuff[self->writeindex]) ==
+                         is_non_word_char(self->pagebuff[self->writeindex-1])))
+                   )
+                    self->writeindex--;
+                // Skip blank characters
+                if (is_blank_char(self->pagebuff[self->writeindex])) {
+                    goto_prev_non_blank(self);
+                }
+                // If in word, move to the end of the word
+                if (is_word_char(self->pagebuff[self->writeindex])) {
+                    goto_prev_non_word(self);
+                    if (self->writeindex > 0)
+                        self->writeindex++;
+                    // If is non word, move to the end of the non word
+                } else if (is_non_word_char(self->pagebuff[self->writeindex])) {
+                    goto_prev_non_non_word(self);
+                    if (self->writeindex > 0)
+                        self->writeindex++;
+                }
+            }
+
+            self->cache_column = -1; // update cache column
+
+            c_buf[0] = n_buf[0] = '\0';
+            break;
+
+        case COM_BACK:
+            n = strtol(n_buf, &endptr, 10);
+            if (*endptr != '\0' || n_buf[0] == '\0') n = 1;
+
+            for (int i = 0; i < n; i++) {
+                if (self->writeindex > 0 &&
+                        is_blank_char(self->pagebuff[self->writeindex-1]))
+                    self->writeindex--;
+                goto_prev_non_blank(self);
+                while (is_word_char(self->pagebuff[self->writeindex]) ||
+                        is_non_word_char(self->pagebuff[self->writeindex])) {
+                    goto_prev_non_word(self);
+                    goto_prev_non_non_word(self);
+                    if (self->writeindex <= 0) break;
+                }
+                if (self->writeindex > 0)
+                    self->writeindex++;
+            }
+
+            self->cache_column = -1; // update cache column
+
+            c_buf[0] = n_buf[0] = '\0';
+            break;
+
         case COM_LOWCASE_END_WORD:
             n = strtol(n_buf, &endptr, 10);
             if (*endptr != '\0' || n_buf[0] == '\0') n = 1;
@@ -159,10 +216,10 @@ void textReader_normal_mode_key_handler(TextReader *self, int c, Command com) {
 
             } else {
                 for (int i = 0; i < n; i++) {
-                    if (self->writeindex < self->bytesRead &&
+                    if (self->writeindex < self->bytesRead && (
                             is_blank_char(self->pagebuff[self->writeindex+1]) ||
                             (is_word_char(self->pagebuff[self->writeindex]) ==
-                             is_non_word_char(self->pagebuff[self->writeindex+1]))
+                             is_non_word_char(self->pagebuff[self->writeindex+1])))
                        )
                         self->writeindex++;
                     // Skip blank characters
