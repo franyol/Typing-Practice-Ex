@@ -55,6 +55,57 @@ void textReader_normal_mode_key_handler(TextReader *self, int c, Command com) {
             c_buf[0] = n_buf[0] = '\0';
             break;
 
+        case COM_MATCH_PAIRS:
+            n_buf[0] = 0; // use as nested counter
+            c_buf[0] = self->pagebuff[self->writeindex];
+            switch(c_buf[0]) {
+                case '{':
+                    c_buf[1] = '}';
+                    c_buf[2] = 'f';
+                    break;
+                case '[':
+                    c_buf[1] = ']';
+                    c_buf[2] = 'f';
+                    break;
+                case '(':
+                    c_buf[1] = ')';
+                    c_buf[2] = 'f';
+                    break;
+                case '}':
+                    c_buf[1] = '{';
+                    c_buf[2] = 'b';
+                    break;
+                case ']':
+                    c_buf[1] = '[';
+                    c_buf[2] = 'b';
+                    break;
+                case ')':
+                    c_buf[1] = '(';
+                    c_buf[2] = 'b';
+                    break;
+                default:
+                    c_buf[2] = 'q';
+                    break;
+            }
+
+            if (c_buf[2] == 'q') break;
+
+            if (c_buf[2] == 'f' || c_buf[2] == 'b') {
+                while (self->writeindex <= self->bytesRead) {
+                    (c_buf[2] == 'f') ? ++self->writeindex : --self->writeindex;
+                    if (self->pagebuff[self->writeindex] == c_buf[0]) {
+                        n_buf[0]++;
+                    } else if (self->pagebuff[self->writeindex] == c_buf[1]) {
+                        if (n_buf[0] == 0) break;
+                        n_buf[0]--;
+                    }
+                }
+            }
+
+            self->cache_column = -1;
+            c_buf[0] = n_buf[0] = '\0';
+            break;
+
         case COM_LOWCASE_G:
             if (c_buf[0] == 'g') {
                 self->writeindex = 0;
