@@ -14,6 +14,9 @@ void goto_next_non_blank(TextReader* self);
 void goto_next_char(TextReader* self, char c);
 void goto_prev_char(TextReader* self, char c);
 
+void goto_next_inline_char(TextReader* self, char c);
+void goto_prev_inline_char(TextReader* self, char c);
+
 void goto_prev_non_non_word(TextReader* self);
 void goto_prev_non_word(TextReader* self);
 void goto_prev_non_blank(TextReader* self);
@@ -118,7 +121,7 @@ void textReader_normal_mode_key_handler(TextReader *self, int c, Command com) {
 
         case COM_FIND:
             if (c_buf[0] == 'f') {
-                goto_next_char(self, c);
+                goto_next_inline_char(self, c);
                 self->cache_column = -1;
                 c_buf[0] = n_buf[0] = '\0';
             } else {
@@ -128,7 +131,7 @@ void textReader_normal_mode_key_handler(TextReader *self, int c, Command com) {
 
         case COM_FIND_BACK:
             if (c_buf[0] == 'F') {
-                goto_prev_char(self, c);
+                goto_prev_inline_char(self, c);
                 self->cache_column = -1;
                 c_buf[0] = n_buf[0] = '\0';
             } else {
@@ -491,9 +494,33 @@ void goto_next_char(TextReader* self, char c) {
     }
 }
 
+void goto_next_inline_char(TextReader* self, char c) {
+    int og_index = self->writeindex;
+    while (self->pagebuff[self->writeindex] != c) {
+        if (self->writeindex >= self->bytesRead-1 ||
+                self->pagebuff[self->writeindex] == '\n') {
+            self->writeindex = og_index; // no match found inline
+            break;
+        }
+        self->writeindex++;
+    }
+}
+
 void goto_prev_char(TextReader* self, char c) {
     while (self->pagebuff[self->writeindex] != c) {
         if (self->writeindex <= 0) break;
+        self->writeindex--;
+    }
+}
+
+void goto_prev_inline_char(TextReader* self, char c) {
+    int og_index = self->writeindex;
+    while (self->pagebuff[self->writeindex] != c) {
+        if (self->writeindex <= 0 ||
+                self->pagebuff[self->writeindex] == '\n') {
+            self->writeindex = og_index; // no match found inline
+            break;
+        }
         self->writeindex--;
     }
 }
