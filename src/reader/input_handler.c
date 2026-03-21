@@ -131,6 +131,7 @@ void textReader_normal_mode_key_handler(TextReader *self, int c, Command com) {
 
         case COM_FIND_BACK:
             if (c_buf[0] == 'F') {
+                if (self->pagebuff[self->writeindex] == '\n') self->writeindex--;
                 goto_prev_inline_char(self, c);
                 self->cache_column = -1;
                 c_buf[0] = n_buf[0] = '\0';
