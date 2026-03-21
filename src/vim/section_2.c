@@ -19,6 +19,11 @@ int section_2_update(FSM_State *self, struct timeval *dt) {
     static int target = 0;
 
     static int fd = -1;
+    static int n_targets = 0;
+    static int max_targets = 10;
+
+    static char message[64] = "";
+    reader->message = message;
 
     switch (state) {
         case LOAD_TEXT:
@@ -32,6 +37,9 @@ int section_2_update(FSM_State *self, struct timeval *dt) {
             reader->fd = fd;
             textReader_fillBuffer(reader);
             //reader->message = "Buffer loaded";
+            reader->writeindex = 0;
+
+            n_targets = -1;
 
             state = NEXT_TARGET;
             break;
@@ -47,8 +55,18 @@ int section_2_update(FSM_State *self, struct timeval *dt) {
 
             reader->writebuff[target] = 'h'; // Highlight new target
 
-            state = GET_COMMAND;
+            n_targets++;
+            snprintf(message, sizeof(message), "%d / %d", n_targets, max_targets);
+
+            if (n_targets >= max_targets) {
+                close(reader->fd);
+                n_targets = 0;
+                state = LOAD_TEXT;
+            } else {
+                state = GET_COMMAND;
+            }
             break;
+
         case GET_COMMAND:
             c = input_getKey(&com);
 

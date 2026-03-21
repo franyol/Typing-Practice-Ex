@@ -145,7 +145,7 @@ void textReader_print(TextReader* self) {
 					attrset(A_NORMAL | COLOR_PAIR(RED));
 					break;
 				case 'h':
-					attrset(A_NORMAL | COLOR_PAIR(HIGHLIGHT));
+					attrset(A_BLINK | COLOR_PAIR(HIGHLIGHT));
 					break;
 			}
 

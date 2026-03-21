@@ -7,7 +7,7 @@ void init_colors() {
 	init_pair(BLUE, COLOR_BLUE, COLOR_BLACK);
 	init_pair(GREEN, COLOR_GREEN, COLOR_BLACK);
 	init_pair(CURSOR, COLOR_BLACK, COLOR_WHITE);
-	init_pair(HIGHLIGHT, COLOR_WHITE, COLOR_GREEN);
+	init_pair(HIGHLIGHT, COLOR_BLACK, COLOR_YELLOW);
 }
 
 void clear_win(void) {

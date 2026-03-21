@@ -27,7 +27,7 @@ void textReader_normal_mode_key_handler(TextReader *self, int c, Command com) {
     long n = 1;
     char *endptr;
 
-    self->message = c_buf;
+    //self->message = c_buf;
 
     if (c >= '0' && c <= '9' && c_buf[0] == '\0') {
         append(n_buf, c);
@@ -387,13 +387,17 @@ void textReader_normal_mode_key_handler(TextReader *self, int c, Command com) {
             break;
 
         case COM_LEFT:
-            self->writeindex--;
+            n = strtol(n_buf, &endptr, 10);
+            if (*endptr != '\0' || n_buf[0] == '\0') n = 1;
+            for(int i=0;i<n;i++) self->writeindex--;
             self->cache_column = -1; // Update cache column on next print
             c_buf[0] = n_buf[0] = '\0';
             break;
 
         case COM_RIGHT:
-            if (self->writeindex < self->bytesRead-1) self->writeindex++;
+            n = strtol(n_buf, &endptr, 10);
+            if (*endptr != '\0' || n_buf[0] == '\0') n = 1;
+            for(int i=0;i<n;i++) if (self->writeindex < self->bytesRead-1) self->writeindex++;
             self->cache_column = -1; // Update cache column on next print
             c_buf[0] = n_buf[0] = '\0';
             break;
