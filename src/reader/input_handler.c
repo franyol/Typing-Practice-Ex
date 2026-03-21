@@ -369,6 +369,7 @@ void textReader_normal_mode_key_handler(TextReader *self, int c, Command com) {
                 }
             }
 
+            self->cache_column = -1;
             c_buf[0] = n_buf[0] = '\0';
             break;
 
