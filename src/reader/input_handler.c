@@ -137,6 +137,9 @@ void textReader_normal_mode_key_handler(TextReader *self, int c, Command com) {
             break;
 
         case COM_ABS_START:
+            if (n_buf[0] != '0')
+                break;
+
             self->writeindex = self->writeindex - self->column;
             self->cache_column = -1;
             c_buf[0] = n_buf[0] = '\0';
