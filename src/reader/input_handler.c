@@ -17,6 +17,9 @@ void goto_prev_char(TextReader* self, char c);
 void goto_next_inline_char(TextReader* self, char c);
 void goto_prev_inline_char(TextReader* self, char c);
 
+void go_before_next_inline_char(TextReader* self, char c);
+void go_after_prev_inline_char(TextReader* self, char c);
+
 void goto_prev_non_non_word(TextReader* self);
 void goto_prev_non_word(TextReader* self);
 void goto_prev_non_blank(TextReader* self);
@@ -29,6 +32,8 @@ void textReader_normal_mode_key_handler(TextReader *self, int c, Command com) {
     static char c_buf[MAX_CHAR_BUFF] = "";
     long n = 1;
     char *endptr;
+    static char last_found_char = ' ';
+    static char last_found_com = 'f';
 
     //self->message = c_buf;
 
@@ -41,6 +46,11 @@ void textReader_normal_mode_key_handler(TextReader *self, int c, Command com) {
         if (com != COM_NORMAL_MODE &&
                 c != ERR)
             com = (c_buf[0] == 'f') ? COM_FIND : COM_FIND_BACK;
+    }
+    if (c_buf[0] == 't' || c_buf[0] == 'T') {
+        if (com != COM_NORMAL_MODE &&
+                c != ERR)
+            com = (c_buf[0] == 't') ? COM_TO : COM_TO_BACK;
     }
 
     // Keys that expect a second keystroke have this special treatment
@@ -121,7 +131,12 @@ void textReader_normal_mode_key_handler(TextReader *self, int c, Command com) {
 
         case COM_FIND:
             if (c_buf[0] == 'f') {
-                goto_next_inline_char(self, c);
+                n = strtol(n_buf, &endptr, 10);
+                if (*endptr != '\0' || n_buf[0] == '\0') n = 1;
+                for (int i = 0; i < n; i++)
+                    goto_next_inline_char(self, c);
+                last_found_char = c;
+                last_found_com = 'f';
                 self->cache_column = -1;
                 c_buf[0] = n_buf[0] = '\0';
             } else {
@@ -132,12 +147,82 @@ void textReader_normal_mode_key_handler(TextReader *self, int c, Command com) {
         case COM_FIND_BACK:
             if (c_buf[0] == 'F') {
                 if (self->pagebuff[self->writeindex] == '\n') self->writeindex--;
-                goto_prev_inline_char(self, c);
+                n = strtol(n_buf, &endptr, 10);
+                if (*endptr != '\0' || n_buf[0] == '\0') n = 1;
+                for (int i = 0; i < n; i++)
+                    goto_prev_inline_char(self, c);
+                last_found_char = c;
+                last_found_com = 'F';
                 self->cache_column = -1;
                 c_buf[0] = n_buf[0] = '\0';
             } else {
                 append(c_buf, 'F');
             }
+            break;
+
+        case COM_TO:
+            if (c_buf[0] == 't') {
+                n = strtol(n_buf, &endptr, 10);
+                if (*endptr != '\0' || n_buf[0] == '\0') n = 1;
+                for (int i = 0; i < n; i++)
+                    go_before_next_inline_char(self, c);
+                last_found_char = c;
+                last_found_com = 't';
+                self->cache_column = -1;
+                c_buf[0] = n_buf[0] = '\0';
+            } else {
+                append(c_buf, 't');
+            }
+            break;
+
+        case COM_TO_BACK:
+            if (c_buf[0] == 'T') {
+                if (self->pagebuff[self->writeindex] == '\n') self->writeindex--;
+                n = strtol(n_buf, &endptr, 10);
+                if (*endptr != '\0' || n_buf[0] == '\0') n = 1;
+                for (int i = 0; i < n; i++)
+                    go_after_prev_inline_char(self, c);
+                last_found_char = c;
+                last_found_com = 'T';
+                self->cache_column = -1;
+                c_buf[0] = n_buf[0] = '\0';
+            } else {
+                append(c_buf, 'T');
+            }
+            break;
+
+        case COM_REPEAT_FIND:
+            n = strtol(n_buf, &endptr, 10);
+            if (*endptr != '\0' || n_buf[0] == '\0') n = 1;
+            for (int i = 0; i < n; i++) {
+                if (last_found_com == 'f' || last_found_com == 'F') {
+                    goto_next_inline_char(self, last_found_char);
+                    self->cache_column = -1;
+                } else {
+                    go_before_next_inline_char(self, last_found_char);
+                    self->cache_column = -1;
+                }
+            }
+
+            c_buf[0] = n_buf[0] = '\0';
+            break;
+
+        case COM_REPEAT_FIND_BACK:
+            if (self->pagebuff[self->writeindex] == '\n') self->writeindex--;
+
+            n = strtol(n_buf, &endptr, 10);
+            if (*endptr != '\0' || n_buf[0] == '\0') n = 1;
+            for (int i = 0; i < n; i++) {
+                if (last_found_com == 'f' || last_found_com == 'F') {
+                    goto_prev_inline_char(self, last_found_char);
+                    self->cache_column = -1;
+                } else {
+                    go_after_prev_inline_char(self, last_found_char);
+                    self->cache_column = -1;
+                }
+            }
+
+            c_buf[0] = n_buf[0] = '\0';
             break;
 
         case COM_ABS_START:
@@ -497,7 +582,31 @@ void goto_next_char(TextReader* self, char c) {
 
 void goto_next_inline_char(TextReader* self, char c) {
     int og_index = self->writeindex;
+
+    if (self->writeindex >= self->bytesRead-1 ||
+            self->pagebuff[self->writeindex] == '\n') return;
+
+    self->writeindex++;
+
     while (self->pagebuff[self->writeindex] != c) {
+        if (self->writeindex >= self->bytesRead-1 ||
+                self->pagebuff[self->writeindex] == '\n') {
+            self->writeindex = og_index; // no match found inline
+            break;
+        }
+        self->writeindex++;
+    }
+}
+
+void go_before_next_inline_char(TextReader* self, char c) {
+    int og_index = self->writeindex;
+
+    if (self->writeindex+1 >= self->bytesRead-1 ||
+            self->pagebuff[self->writeindex+1] == '\n') return;
+
+    self->writeindex++;
+
+    while (self->pagebuff[self->writeindex+1] != c) {
         if (self->writeindex >= self->bytesRead-1 ||
                 self->pagebuff[self->writeindex] == '\n') {
             self->writeindex = og_index; // no match found inline
@@ -516,7 +625,31 @@ void goto_prev_char(TextReader* self, char c) {
 
 void goto_prev_inline_char(TextReader* self, char c) {
     int og_index = self->writeindex;
+
+    if (self->writeindex <= 0 ||
+            self->pagebuff[self->writeindex] == '\n') return;
+
+    self->writeindex--;
+
     while (self->pagebuff[self->writeindex] != c) {
+        if (self->writeindex <= 0 ||
+                self->pagebuff[self->writeindex] == '\n') {
+            self->writeindex = og_index; // no match found inline
+            break;
+        }
+        self->writeindex--;
+    }
+}
+
+void go_after_prev_inline_char(TextReader* self, char c) {
+    int og_index = self->writeindex;
+
+    if (self->writeindex-1 <= 0 ||
+            self->pagebuff[self->writeindex-1] == '\n') return;
+
+    self->writeindex--;
+
+    while (self->pagebuff[self->writeindex-1] != c) {
         if (self->writeindex <= 0 ||
                 self->pagebuff[self->writeindex] == '\n') {
             self->writeindex = og_index; // no match found inline

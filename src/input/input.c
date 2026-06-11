@@ -44,6 +44,10 @@ void input_init() {
     keyBindings['f'] = COM_FIND;
     keyBindings['%'] = COM_MATCH_PAIRS;
     keyBindings['F'] = COM_FIND_BACK;
+    keyBindings['t'] = COM_TO;
+    keyBindings['T'] = COM_TO_BACK;
+    keyBindings[';'] = COM_REPEAT_FIND;
+    keyBindings[','] = COM_REPEAT_FIND_BACK;
     keyBindings['{'] = COM_LAST_PARAG;
     keyBindings['}'] = COM_NEXT_PARAG;
 }
